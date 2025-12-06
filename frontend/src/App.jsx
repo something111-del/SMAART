@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, TrendingUp, Sparkles, Github, ExternalLink } from 'lucide-react'
 import SearchBar from './components/SearchBar'
 import SummaryCard from './components/SummaryCard'
 import TrendingTopics from './components/TrendingTopics'
 import SentimentChart from './components/SentimentChart'
+// Import Monitoring Component
+import MonitoringModal from './components/MonitoringModal'
 import { summarizeTopic, getTrendingTopics } from './services/api'
 import './App.css'
 
@@ -13,6 +15,8 @@ function App() {
     const [trending, setTrending] = useState([])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    // State for monitoring modal
+    const [showMonitor, setShowMonitor] = useState(false)
 
     const handleSearch = async () => {
         if (!query.trim()) return
@@ -41,7 +45,7 @@ function App() {
     }
 
     // Load trending on mount
-    useState(() => {
+    useEffect(() => {
         loadTrending()
     }, [])
 
@@ -61,8 +65,15 @@ function App() {
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">
+                            <button
+                                onClick={() => setShowMonitor(true)}
+                                className="flex items-center space-x-2 text-gray-600 hover:text-indigo-600 transition bg-indigo-50 px-3 py-1.5 rounded-lg border border-indigo-100"
+                            >
+                                <TrendingUp className="w-4 h-4" />
+                                <span className="hidden md:inline font-medium">System status</span>
+                            </button>
                             <a
-                                href="https://github.com/yourusername/SMAART"
+                                href="https://github.com/something111-del/SMAART"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center space-x-2 text-gray-600 hover:text-indigo-600 transition"
@@ -81,6 +92,9 @@ function App() {
                     </div>
                 </div>
             </header>
+
+            {/* Monitoring Modal */}
+            {showMonitor && <MonitoringModal onClose={() => setShowMonitor(false)} />}
 
             {/* Hero Section */}
             <section className="container mx-auto px-4 py-16">

@@ -23,13 +23,13 @@ spec:
             - containerPort: 8000
           env:
             - name: DATABASE_URL
-              value: "postgresql://smaart_user:smaart_password@postgres-postgresql.processing.svc.cluster.local:5432/smaart_db"
+              value: "postgresql://smaart_user:smaart_password@postgres-postgresql.default.svc.cluster.local:5432/smaart_db"
             - name: REDIS_URL
-              value: "redis://:redis_password@redis-master.processing.svc.cluster.local:6379/0"
+              value: "redis://:redis_password@redis-master.default.svc.cluster.local:6379/0"
             - name: CELERY_BROKER_URL
-              value: "redis://:redis_password@redis-master.processing.svc.cluster.local:6379/0"
+              value: "redis://:redis_password@redis-master.default.svc.cluster.local:6379/0"
             - name: CELERY_RESULT_BACKEND
-              value: "redis://:redis_password@redis-master.processing.svc.cluster.local:6379/0"
+              value: "redis://:redis_password@redis-master.default.svc.cluster.local:6379/0"
             # Secrets would normally be mounted or sealed, simplifying for demo
             - name: TWITTER_API_KEY
               value: "${TWITTER_API_KEY}"
@@ -42,12 +42,33 @@ metadata:
   name: smaart-api
   namespace: processing
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: smaart-api
   ports:
-    - port: 80
+    - port: 8000
       targetPort: 8000
+      nodePort: 30000
+      name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smaart-ingress
+  namespace: processing
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: smaart-api
+                port:
+                  number: 8000
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -80,8 +101,8 @@ spec:
             ]
           env:
             - name: DATABASE_URL
-              value: "postgresql://smaart_user:smaart_password@postgres-postgresql.processing.svc.cluster.local:5432/smaart_db"
+              value: "postgresql://smaart_user:smaart_password@postgres-postgresql.default.svc.cluster.local:5432/smaart_db"
             - name: CELERY_BROKER_URL
-              value: "redis://:redis_password@redis-master.processing.svc.cluster.local:6379/0"
+              value: "redis://:redis_password@redis-master.default.svc.cluster.local:6379/0"
             - name: CELERY_RESULT_BACKEND
-              value: "redis://:redis_password@redis-master.processing.svc.cluster.local:6379/0"
+              value: "redis://:redis_password@redis-master.default.svc.cluster.local:6379/0"

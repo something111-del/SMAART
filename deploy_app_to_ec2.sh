@@ -16,7 +16,7 @@ ssh -o StrictHostKeyChecking=no -i $KEY_PATH $USER@$SERVER_IP "mkdir -p ~/smaart
 # 2. Upload backend code
 echo "uploading code..."
 # Exclude venv, __pycache__, etc.
-tar -czf backend.tar.gz backend/
+tar --exclude='__pycache__' --exclude='*.pyc' --exclude='.git' --exclude='.DS_Store' --exclude='venv' -czf backend.tar.gz backend/
 scp -o StrictHostKeyChecking=no -i $KEY_PATH backend.tar.gz $USER@$SERVER_IP:~/smaart/
 rm backend.tar.gz
 
@@ -33,23 +33,39 @@ ssh -o StrictHostKeyChecking=no -i $KEY_PATH $USER@$SERVER_IP "bash -s" << 'EOF'
     echo "📦 Extracting code..."
     tar -xzf backend.tar.gz -C .
     
-    echo "🐳 Building Docker image..."
-    # Using k3s's built-in containerd directory if possible, or build with docker and import
-    # For simplicity with k3s, we often build with docker and save/import or use k3s ctr
-    # Assuming docker was installed by our user_data script
+    # Add Swap for ML models (t3.micro has only 1GB RAM)
+    if [ ! -f /swapfile ]; then
+        echo "💾 Adding 4GB Swap file..."
+        sudo fallocate -l 4G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+    fi
     
-    docker build -t smaart-api:latest -f backend/services/api/Dockerfile .
+    echo "🐳 Building Docker image..."
+    # Check if docker is ready
+    if ! command -v docker &> /dev/null; then
+        echo "Docker not found, waiting/checking..."
+        sudo apt-get update && sudo apt-get install -y docker.io
+    fi
+    
+    sudo docker build -t smaart-api:latest -f backend/services/api/Dockerfile .
     
     echo "📥 Importing image to k3s..."
-    docker save smaart-api:latest | sudo k3s ctr images import -
+    sudo docker save smaart-api:latest | sudo k3s ctr images import -
     
     echo "☸️ Applying Kubernetes manifests..."
-    # Wait for namespace if it doesn't exist yet (created by user_data script usually)
-    kubectl create namespace processing || true
+    export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    
+    # Wait for k3s
+    until sudo kubectl get nodes; do echo "Waiting for k3s..."; sleep 5; done
+    
+    sudo kubectl create namespace processing || true
     
     # Apply
-    kubectl apply -f infra/app-deployment.yaml
+    sudo kubectl apply -f infra/app-deployment.yaml
     
     echo "✅ Deployment successful!"
-    kubectl get pods -n processing
+    sudo kubectl get pods -n processing
 EOF

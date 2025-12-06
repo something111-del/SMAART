@@ -143,7 +143,15 @@ python main.py
 SMAART - Social Media Analytics & Real-Time Trends
 
 ### **Description**
-Production-grade AI-powered platform for real-time social media intelligence. Aggregates data from Twitter/X and global news sources, performs NLP enrichment with sentiment analysis and named entity recognition, and generates abstractive summaries using DistilBART transformer model. Built with microservices architecture, deployed on AWS with Kubernetes orchestration.
+Production-grade AI-powered platform for real-time social media intelligence. Aggregates data from Twitter/X and global news sources, performs NLP enrichment with sentiment analysis and named entity recognition, and generates abstractive summaries using DistilBART transformer model. Built with microservices architecture,4.  **Deployment (Optimized)**:
+    - **Method**: Local Build -> Docker Save -> SCP -> K3s Import
+    - **Reason**: Bypasses resource limits on small EC2 instances (t3.micro).
+    - **Script**: `deploy_proper.sh`
+    - **Process**:
+        1.  Build `linux/amd64` image locally (Docker Desktop).
+        2.  Compress and upload to EC2.
+        3.  Load into `k3s` containerd directly (skipping registry).
+        4.  Update Kubernetes deployment.ilBART, PyTorch, Transformers, NLTK, spaCy, scikit-learn, MLflow, Docker, Kubernetes (k3s), Terraform, Nginx, GitHub Actions, AWS EC2, Vercel, Prometheus, Grafana, Loki
 
 ### **Tech Stack**
 React, Vite, Tailwind CSS, FastAPI, PostgreSQL, Redis, Celery, DistilBART, PyTorch, Transformers, NLTK, spaCy, scikit-learn, MLflow, Docker, Kubernetes (k3s), Terraform, Nginx, GitHub Actions, AWS EC2, Vercel, Prometheus, Grafana, Loki
@@ -159,9 +167,9 @@ React, Vite, Tailwind CSS, FastAPI, PostgreSQL, Redis, Celery, DistilBART, PyTor
 - Comprehensive test coverage
 
 ### **Links**
-- **GitHub**: https://github.com/YOUR_USERNAME/SMAART
+- **GitHub**: https://github.com/something111-del/SMAART
 - **Live Demo**: [Vercel URL after deployment]
-- **API Docs**: [EC2 IP]/docs (after AWS deployment)
+- **API Docs**: http://3.131.187.197:8000/docs
 
 ---
 

@@ -190,9 +190,8 @@ React, FastAPI, DistilBART, PyTorch, NLTK, spaCy, PostgreSQL, Redis, Celery, Kub
 ## 📊 Project Stats
 
 - **Lines of Code**: ~2,500+
-- **Files Created**: 24
-- **Documentation**: 15,000+ words
-- **Tech Stack**: 20+ technologies
+- **Live Backend**: `http://3.131.187.197:30000/docs`
+- **Frontend**: `https://frontend-195n2791h-something111-dels-projects.vercel.app`
 - **Deployment Platforms**: 3 (AWS, Vercel, Docker Hub)
 - **Time to Build**: ~2 hours
 - **Estimated Value**: $50K+ project

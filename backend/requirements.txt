@@ -5,12 +5,10 @@ pydantic-settings==2.1.0
 python-dotenv==1.0.0
 
 # ML & NLP
-transformers==4.36.2
-torch==2.1.2
+# ML & NLP (Lightweight)
+# transformers, torch, sklearn removed for lightweight deployment
 nltk==3.8.1
 spacy==3.7.2
-scikit-learn==1.4.0
-mlflow==2.9.2
 
 # Data Processing
 celery==5.3.4
