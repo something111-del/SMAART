@@ -51,12 +51,12 @@ helm install redis bitnami/redis \
   --set auth.password=redis_password \
   --set master.persistence.size=5Gi
 
-# Install Prometheus + Grafana
-helm install loki-stack grafana/loki-stack \
-  --namespace monitoring \
-  --set grafana.enabled=true \
-  --set prometheus.enabled=true \
-  --set promtail.enabled=true
+# Install Prometheus + Grafana (DISABLED to save RAM)
+# helm install loki-stack grafana/loki-stack \
+#   --namespace monitoring \
+#   --set grafana.enabled=true \
+#   --set prometheus.enabled=true \
+#   --set promtail.enabled=true
 
 # Install Nginx Ingress
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml

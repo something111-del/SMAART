@@ -5,10 +5,13 @@ pydantic-settings==2.1.0
 python-dotenv==1.0.0
 
 # ML & NLP
-# ML & NLP (Lightweight)
-# transformers, torch, sklearn removed for lightweight deployment
-nltk==3.8.1
-spacy==3.7.2
+# ML & NLP
+# ML & NLP
+transformers==4.36.0
+torch==2.1.2 --index-url https://download.pytorch.org/whl/cpu
+mlflow==2.9.2
+scikit-learn==1.3.2
+
 
 # Data Processing
 celery==5.3.4
@@ -23,6 +26,7 @@ tweepy==4.14.0
 # News API
 newsapi-python==0.2.7
 requests==2.31.0
+duckduckgo-search==5.3.0
 
 # Utilities
 python-multipart==0.0.6
@@ -35,6 +39,7 @@ aiofiles==23.2.1
 prometheus-client==0.19.0
 opentelemetry-api==1.22.0
 opentelemetry-sdk==1.22.0
+psutil==5.9.8
 
 # Testing
 pytest==7.4.4

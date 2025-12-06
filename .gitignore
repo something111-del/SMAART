@@ -1,8 +1,6 @@
-# Environment variables
-.env
-.env.local
-.env.*.local
-*.env
+# System Files
+.DS_Store
+Thumbs.db
 
 # Python
 __pycache__/
@@ -10,6 +8,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -25,87 +24,58 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
+
+# Virtual Environment
+.venv
 venv/
 ENV/
-env/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# PyCharm
-.idea/
-
-# VS Code
-.vscode/
-
-# Terraform
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-terraform.tfvars
-
-# Kubernetes
-kubeconfig
-*.kubeconfig
-
-# Docker
-.dockerignore
 
 # Node.js / Frontend
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
 dist/
-dist-ssr/
-*.local
+.npm
+frontend/dist/
+frontend/node_modules/
 
-# Logs
+# Environment Variables
+.env
+.env.local
+.env.*.local
+.env.production
+.env.test
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+
+# Docker & Deployment Artifacts
+*.tar.gz
+*.tar
+*.zip
 *.log
-logs/
 
-# OS
-.DS_Store
-Thumbs.db
+# Project Specific Temporary Files
+*.txt
+trace.log
+apply.log
+allocation_id.txt
+public_ip.txt
+instance_id.txt
+sg_id.txt
+subnet_id.txt
+vpc_id.txt
+smaart-source.tar.gz
+smaart-api-amd64.tar.gz
+smaart-api-amd64-v2.tar.gz
+backend.tar.gz
 
-# ML Models (large files)
-*.pt
-*.pth
-*.h5
-*.pkl
-models/checkpoints/
-
-# Data
-data/raw/
-data/processed/
-*.csv
-*.json
-*.parquet
-
-# Secrets
-secrets/
-credentials/
-*.pem
-*.key
-*.crt
-
-# Monitoring
-grafana/data/
-prometheus/data/
-
-# Backups
-*.backup
-*.bak
-*.sql
-
-# Coverage
-.coverage
-htmlcov/
-.pytest_cache/
-
-# MLflow
-mlruns/
-mlartifacts/
+# Vercel
+.vercel

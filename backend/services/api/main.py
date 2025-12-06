@@ -65,51 +65,25 @@ class HealthResponse(BaseModel):
     version: str
     services: Dict[str, str]
 
-# ML Model Loading (Serverless Inference)
-class SummarizerModel:
-    """Hugging Face Inference API Wrapper (Serverless)"""
-    
-    def __init__(self):
-        self.model_name = "facebook/bart-large-cnn"
-        self.api_url = f"https://api-inference.huggingface.co/models/{self.model_name}"
-        self.api_token = os.getenv("HF_API_TOKEN") # Optional, but recommended
-        logger.info(f"Initializing HF Inference API for: {self.model_name}")
-        import requests
-        self.requests = requests
-    
-    def summarize(self, text: str, max_length: int = 150) -> str:
-        """Generate summary via HF API"""
-        if not text: return ""
-        try:
-            headers = {}
-            if self.api_token:
-                headers["Authorization"] = f"Bearer {self.api_token}"
-            
-            payload = {
-                "inputs": text,
-                "parameters": {"max_length": max_length, "min_length": 30, "do_sample": False}
-            }
-            
-            response = self.requests.post(self.api_url, headers=headers, json=payload, timeout=20)
-            
-            if response.status_code == 200:
-                # HF API returns a list of dictionaries
-                result = response.json()
-                if isinstance(result, list) and len(result) > 0:
-                    return result[0].get("summary_text", "No summary generated.")
-                return str(result)
-            elif response.status_code == 503:
-                return "Model is loading on Hugging Face (503). Please try again in 30 seconds."
-            else:
-                logger.error(f"HF API Error: {response.status_code} - {response.text}")
-                return f"Summary failed: HF API {response.status_code}"
-                
-        except Exception as e:
-            logger.error(f"Inference failed: {e}")
-            return f"Error connecting to AI: {str(e)}"
-
-# Initialize model
-summarizer = SummarizerModel()
+# ML Model Loading
+try:
+    from backend.models.summarizer.model import SummarizationModel
+    logger.info("Loading local SummarizationModel...")
+    summarizer = SummarizationModel()
+except ImportError as e:
+    logger.error(f"Failed to load local model: {e}. Falling back to mock/API.")
+    # Fallback/Mock for when dependencies are missing in dev
+    class SummarizerModel:
+        def summarize(self, text: str, max_length: int = 150) -> str:
+            return "Local model failed to load. Please check logs."
+    summarizer = SummarizerModel()
+except Exception as e:
+    logger.error(f"Error initializing model: {e}")
+    # Fallback to prevent crash
+    class SummarizerModel:
+        def summarize(self, text: str, max_length: int = 150) -> str:
+             return f"Model initialization error: {str(e)}"
+    summarizer = SummarizerModel()
 
 # API Routes
 @app.get("/", tags=["Root"])
@@ -152,9 +126,108 @@ async def summarize_topic(request: SummarizeRequest):
             if len(request.query) > 30 or len(request.query.split()) > 5:
                 input_text = request.query
             else:
-                # Simulated Topic Search (Mock DB)
-                input_text = f"Recent news about {request.query} indicates significant market movement. Experts suggest caution while investors remain optimistic. Global events are influencing trends in {request.query}."
-                sources_count = {"twitter": 10, "news": 5}
+                # Real-time Web Search using DuckDuckGo with retry logic
+                import time
+                max_retries = 3
+                retry_delay = 2  # seconds
+                
+                for attempt in range(max_retries):
+                    try:
+                        from duckduckgo_search import DDGS
+                        
+                        logger.info(f"Searching web for: {request.query} (attempt {attempt + 1}/{max_retries})")
+                        with DDGS() as ddgs:
+                            # Search for news/text results
+                            results = list(ddgs.text(request.query, max_results=5))
+                        
+                        if results:
+                            # Concatenate snippets to form the context for summarization
+                            context_pieces = []
+                            for r in results:
+                                title = r.get('title', '')
+                                body = r.get('body', '')
+                                context_pieces.append(f"{title}: {body}")
+                            
+                            input_text = "\n\n".join(context_pieces)
+                            sources_count = {"web_search": len(results)}
+                            logger.info(f"Retrieved {len(results)} results from DuckDuckGo")
+                            break  # Success, exit retry loop
+                        else:
+                            logger.warning("No results found via DuckDuckGo")
+                            if attempt < max_retries - 1:
+                                time.sleep(retry_delay)
+                                retry_delay *= 2  # Exponential backoff
+                            else:
+                                # Last attempt failed, return error
+                                raise HTTPException(
+                                    status_code=404,
+                                    detail=f"No information found for '{request.query}'. Try a different query or provide text directly."
+                                )
+                            
+                    except HTTPException:
+                        raise  # Re-raise HTTP exceptions
+                    except Exception as search_err:
+                        logger.error(f"Search attempt {attempt + 1} failed: {search_err}")
+                        if attempt < max_retries - 1:
+                            time.sleep(retry_delay)
+                            retry_delay *= 2
+                        else:
+                            # All retries exhausted
+                            # All retries exhausted for DuckDuckGo
+                            logger.warning("DuckDuckGo failed, trying Wikipedia fallback...")
+                            
+                            # Wikipedia Fallback
+                            try:
+                                import requests
+                                wiki_url = "https://en.wikipedia.org/w/api.php"
+                                headers = {
+                                    "User-Agent": "SMAART-Bot/1.0 (Educational Project; +http://3.145.166.181)"
+                                }
+                                params = {
+                                    "action": "query",
+                                    "format": "json",
+                                    "list": "search",
+                                    "srsearch": request.query,
+                                    "srlimit": 1
+                                }
+                                response = requests.get(wiki_url, params=params, headers=headers, timeout=5)
+                                data = response.json()
+                                
+                                if data.get("query", {}).get("search"):
+                                    page_id = data["query"]["search"][0]["pageid"]
+                                    
+                                    # Get page content
+                                    content_params = {
+                                        "action": "query",
+                                        "format": "json",
+                                        "prop": "extracts",
+                                        "pageids": page_id,
+                                        "explaintext": True,
+                                        "exintro": True
+                                    }
+                                    content_resp = requests.get(wiki_url, params=content_params, headers=headers, timeout=5)
+                                    content_data = content_resp.json()
+                                    extract = content_data["query"]["pages"][str(page_id)]["extract"]
+                                    
+                                    input_text = f"Wikipedia: {extract}"
+                                    sources_count = {"wikipedia": 1}
+                                    logger.info("Successfully retrieved content from Wikipedia")
+                                else:
+                                    logger.warning("No Wikipedia results found")
+                                    raise Exception("No Wikipedia results")
+                                    
+                            except Exception as wiki_err:
+                                logger.error(f"Wikipedia fallback failed: {wiki_err}")
+                                
+                                # Final Fallback: Mock data if purely for demo/testing
+                                if "test" in request.query.lower() or "demo" in request.query.lower():
+                                    input_text = f"This is a simulated summary for the topic '{request.query}'. Real-time search is currently rate-limited, but the system is fully functional for direct text summarization."
+                                    sources_count = {"system_message": 1}
+                                else:
+                                    raise HTTPException(
+                                        status_code=503,
+                                        detail=f"Search services unavailable (Rate Limit). Please provide text directly."
+                                    )
         else:
             raise HTTPException(status_code=400, detail="Either 'text' or 'query' must be provided")
 

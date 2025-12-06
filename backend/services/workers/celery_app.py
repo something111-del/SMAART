@@ -33,9 +33,9 @@ app.conf.update(
 )
 
 # Import tasks after app initialization
-from tasks.nlp_enrichment import enrich_post
-from tasks.spam_detection import detect_spam
-from tasks.deduplication import check_duplicate
+from backend.services.workers.tasks.nlp_enrichment import enrich_post
+from backend.services.workers.tasks.spam_detection import detect_spam
+from backend.services.workers.tasks.deduplication import check_duplicate
 
 @app.task(name='process_post')
 def process_post(post_data):

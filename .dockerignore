@@ -1,0 +1,12 @@
+.git
+.gitignore
+backend/venv
+venv
+__pycache__
+*.pyc
+.DS_Store
+node_modules
+dist
+frontend
+backend.tar.gz
+smaart-api-prod.tar.gz
