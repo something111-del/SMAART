@@ -79,3 +79,4 @@ backend.tar.gz
 
 # Vercel
 .vercel
+backend/infra/terraform/bin/
