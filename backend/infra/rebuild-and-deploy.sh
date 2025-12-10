@@ -4,7 +4,11 @@
 
 set -e
 
-EC2_IP="52.14.181.115"
+EC2_IP="3.145.166.181"
+
+# ... (omitting lines for brevity in replacing, but need to be careful with replace_file_content)
+# Actually, I should just replace the variable definition and the footer echoes separately or use multi-replace if available (it is).
+# But since I need to change lines 7 and 135-144, I will use multi_replace to be safe and clean.
 SSH_KEY="~/.ssh/smaart-key.pem"
 
 echo "🚀 Building and Deploying SMAART on EC2..."
@@ -54,7 +58,7 @@ CMD ["uvicorn", "backend.services.api.main:app", "--host", "0.0.0.0", "--port", 
 EOF
 
 # Build the image
-sudo docker build -t smaart-api:latest .
+sudo docker build -t smaart-api:prod -t smaart-api:latest .
 
 echo "✅ Docker image built successfully"
 ENDSSH
@@ -63,7 +67,7 @@ ENDSSH
 echo "📥 Importing Docker image to k3s..."
 ssh -i $SSH_KEY -o StrictHostKeyChecking=no ubuntu@$EC2_IP << 'ENDSSH'
 # Import to k3s containerd
-sudo docker save smaart-api:latest | sudo k3s ctr images import -
+sudo docker save smaart-api:prod | sudo k3s ctr images import -
 
 echo "✅ Image imported to k3s"
 ENDSSH
@@ -134,12 +138,12 @@ fi
 
 echo ""
 echo "=== Access Information ==="
-echo "API URL: http://52.14.181.115:30000"
-echo "Health Check: http://52.14.181.115:30000/api/v1/health"
-echo "API Docs: http://52.14.181.115:30000/docs"
+echo "API URL: http://3.145.166.181:30000"
+echo "Health Check: http://3.145.166.181:30000/api/v1/health"
+echo "API Docs: http://3.145.166.181:30000/docs"
 ENDSSH
 
 echo ""
 echo "✅ SMAART Deployment Complete!"
-echo "🌐 API URL: http://52.14.181.115:30000"
-echo "📚 API Docs: http://52.14.181.115:30000/docs"
+echo "🌐 API URL: http://3.145.166.181:30000"
+echo "📚 API Docs: http://3.145.166.181:30000/docs"

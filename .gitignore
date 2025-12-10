@@ -62,21 +62,47 @@ frontend/node_modules/
 *.zip
 *.log
 
-# Project Specific Temporary Files
-*.txt
-trace.log
-apply.log
+# Deployment Scripts (keep in scripts/ folder only)
+# Deployment Scripts (keep in scripts/ folder only)
+
+rebuild_*.sh
+
+# Temporary Infrastructure Files
 allocation_id.txt
 public_ip.txt
 instance_id.txt
 sg_id.txt
 subnet_id.txt
 vpc_id.txt
+*.txt
+
+# Large Build Artifacts
 smaart-source.tar.gz
 smaart-api-amd64.tar.gz
 smaart-api-amd64-v2.tar.gz
+smaart-api-prod.tar.gz
+smaart-api.tar.gz
 backend.tar.gz
 
 # Vercel
 .vercel
 backend/infra/terraform/bin/
+
+# Documentation (keep only README.md and docs/ folder)
+DEPLOYMENT_GUIDE.md
+DEPLOYMENT_SIMPLE.md
+PROJECT_STATUS.md
+PROJECT_SUMMARY.md
+QUICKSTART.md
+
+# Nginx config (moved to backend/infra/)
+/nginx/
+
+# Docker Compose (moved to backend/infra/)
+/docker-compose.yml
+
+# Railway config (not used)
+railway.json
+
+# Sensitive Documentation
+SMAART_Project_Details.md
