@@ -126,12 +126,46 @@ async def summarize_topic(request: SummarizeRequest):
             if len(request.query) > 30 or len(request.query.split()) > 5:
                 input_text = request.query
             else:
-                # Real-time Web Search using DuckDuckGo with retry logic
-                import time
-                max_retries = 3
-                retry_delay = 2  # seconds
+# Real-time Web Search
+                # Priority 1: X (Twitter) API
+                try:
+                    import tweepy
+                    logger.info(f"Searching X/Twitter for: {request.query}")
+                    
+                    # X API Credentials
+                    BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAIdi5wEAAAAAN3QuXJP2GIpYBOuy%2BXpqunHTBmI%3DUCjKi7zL46t4pp6zlQeDcVZ3Mfy1PJ8uGXhIAmgyVMNBsgP3yS"
+                    
+                    client = tweepy.Client(bearer_token=BEARER_TOKEN)
+                    
+                    # Search recent tweets (basic query, english, no retweets)
+                    tweets = client.search_recent_tweets(
+                        query=f"{request.query} -is:retweet lang:en",
+                        max_results=10,
+                        tweet_fields=['created_at', 'text', 'public_metrics']
+                    )
+                    
+                    if tweets.data:
+                        tweet_texts = []
+                        for tweet in tweets.data:
+                            # Clean text slightly (remove newlines)
+                            clean_text = tweet.text.replace('\n', ' ')
+                            tweet_texts.append(f"Tweet: {clean_text}")
+                        
+                        input_text = "\n\n".join(tweet_texts)
+                        sources_count = {"twitter": len(tweet_texts)}
+                        logger.info(f"Retrieved {len(tweet_texts)} tweets from X")
+                    
+                    # If tweets found, we don't need to try DDG unless input_text is still empty
+                except Exception as x_err:
+                    logger.error(f"X API failed: {x_err}")
+                    # Continue to DDG fallback
                 
-                for attempt in range(max_retries):
+                if not input_text:
+                    import time
+                    max_retries = 3
+                    retry_delay = 2  # seconds
+                    
+                    for attempt in range(max_retries):
                     try:
                         from duckduckgo_search import DDGS
                         
