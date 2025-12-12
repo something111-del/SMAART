@@ -49,16 +49,6 @@ SMAART is a production-ready social media analytics platform that fetches real-t
 - **ML**: PyTorch + Transformers (DistilBART)
 - **Infrastructure**: Docker + K3s + Vercel
 
-##  Documentation
-
-- **[Complete Documentation](./SMAART_Project_Details.md)** - Comprehensive 1000+ line guide with:
-  - Line-by-line code explanations
-  - Architecture diagrams
-  - Deployment procedures
-  - All credentials and API keys
-  - Troubleshooting guides
-- **[API Documentation](http://3.145.166.181:30000/docs)** - Interactive Swagger UI
-
 ##  Live Deployment
 
 - **Frontend**: https://frontend-688p9jjha-something111-dels-projects.vercel.app
