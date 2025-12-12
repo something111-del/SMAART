@@ -6,11 +6,11 @@
 [![API](https://img.shields.io/badge/API-live-blue)](http://3.145.166.181:30000/docs)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## 🚀 Overview
+##  Overview
 
 SMAART is a production-ready social media analytics platform that fetches real-time data from X (Twitter), DuckDuckGo, and Wikipedia, then uses AI to generate concise summaries. The system is deployed on AWS EC2 with Kubernetes (K3s) and features a React frontend hosted on Vercel.
 
-## 📋 Features
+##  Features
 
 - ✅ **Real-time X/Twitter Integration** - Fetches and summarizes live tweets (10 per query)
 - ✅ **AI Summarization** - Uses DistilBART transformer model for intelligent text summarization
@@ -19,7 +19,7 @@ SMAART is a production-ready social media analytics platform that fetches real-t
 - ✅ **Redis Caching** - 24-hour TTL for identical queries, reducing response time to <200ms
 - ✅ **High Availability** - 2 FastAPI replicas with load balancing via K3s
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 ┌─────────┐    HTTPS     ┌─────────┐    HTTP      ┌──────────┐
@@ -49,7 +49,7 @@ SMAART is a production-ready social media analytics platform that fetches real-t
 - **ML**: PyTorch + Transformers (DistilBART)
 - **Infrastructure**: Docker + K3s + Vercel
 
-## 📚 Documentation
+##  Documentation
 
 - **[Complete Documentation](./SMAART_Project_Details.md)** - Comprehensive 1000+ line guide with:
   - Line-by-line code explanations
@@ -59,14 +59,14 @@ SMAART is a production-ready social media analytics platform that fetches real-t
   - Troubleshooting guides
 - **[API Documentation](http://3.145.166.181:30000/docs)** - Interactive Swagger UI
 
-## 🌐 Live Deployment
+##  Live Deployment
 
 - **Frontend**: https://frontend-688p9jjha-something111-dels-projects.vercel.app
 - **Backend API**: http://3.145.166.181:30000
 - **Health Check**: http://3.145.166.181:30000/api/v1/health
 - **API Docs**: http://3.145.166.181:30000/docs
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 ### Frontend
 | Technology | Version | Purpose |
@@ -133,9 +133,9 @@ SMAART is a production-ready social media analytics platform that fetches real-t
 **Dashboard Strategy (Hybrid Approach):**
 The frontend monitoring dashboard uses a hybrid strategy to demonstrate system capabilities while maintaining efficiency:
 
-1.  ✅ **Real-Time System Health**: The "OPERATIONAL" status badge and health check indicators are **REAL**. They trigger actual requests to the backend `/api/v1/health` endpoint to verify the system is alive and responding.
-2.  ⚠️ **Simulated Metrics**: CPU usage, Memory graphs, and Latency charts use **mock data** for visual demonstration purposes.
-3.  ⚠️ **ELK/Monitoring Stack**: A full monitoring stack (Loki, Prometheus, Grafana - ELK alternative) has been **configured** in the codebase but is **not currently active** (not "put in place") to conserve resources.
+1.   **Real-Time System Health**: The "OPERATIONAL" status badge and health check indicators are **REAL**. They trigger actual requests to the backend `/api/v1/health` endpoint to verify the system is alive and responding.
+2.   **Simulated Metrics**: CPU usage, Memory graphs, and Latency charts use **mock data** for visual demonstration purposes.
+3.   **ELK/Monitoring Stack**: A full monitoring stack (Loki, Prometheus, Grafana - ELK alternative) has been **configured** in the codebase but is **not currently active** (not "put in place") to conserve resources.
 
 **Infrastructure Tools Status:**
 Due to the t3.large instance's 8GB RAM limit, the heavy monitoring stack is disabled in favor of lightweight `kubectl` commands.
@@ -191,7 +191,7 @@ kubectl top pods -n processing
 | DuckDuckGo | Web search fallback | Aggressive rate limiting |
 | Wikipedia | Knowledge base fallback | Unlimited |
 
-## 📊 Performance Metrics
+##  Performance Metrics
 
 - **Response Time (X API)**: 15-25 seconds (includes ML inference)
 - **Response Time (Cached)**: <200ms
@@ -199,7 +199,7 @@ kubectl top pods -n processing
 - **Memory Usage**: 2-3GB during inference, ~100MB idle
 - **Uptime**: 99.9% (monitored via health checks)
 
-## 🔧 Local Development
+##  Local Development
 
 ### Prerequisites
 - Python 3.11+
@@ -240,7 +240,7 @@ npm run dev
 
 The frontend will be available at `http://localhost:5173` and the backend at `http://localhost:8000`.
 
-## 🚢 Deployment
+##  Deployment
 
 ### Backend Deployment (AWS EC2 + K3s)
 
@@ -312,9 +312,9 @@ curl -X POST "http://3.145.166.181:30000/api/v1/summarize" \
 curl http://3.145.166.181:30000/api/v1/health
 ```
 
-## 🔐 Security & Credentials
+##  Security & Credentials
 
-⚠️ **Important**: All API keys and credentials in this repository are for demonstration purposes. The following credentials are documented in `SMAART_Project_Details.md`:
+**Important**: All API keys and credentials in this repository are for demonstration purposes. The following credentials are documented in `SMAART_Project_Details.md`:
 
 - X (Twitter) API credentials
 - AWS access keys
@@ -326,7 +326,7 @@ curl http://3.145.166.181:30000/api/v1/health
 - Kubernetes Secrets for database passwords
 - Environment variables (not hardcoded values)
 
-## 🐛 Troubleshooting
+##  Troubleshooting
 
 ### X API Rate Limit (429 Error)
 
@@ -367,7 +367,7 @@ sudo k3s ctr images import /tmp/smaart-api.tar
 sudo kubectl rollout restart deployment/smaart-api -n processing
 ```
 
-## 📄 Project Structure
+##  Project Structure
 
 ```
 SMAART/
@@ -395,18 +395,18 @@ SMAART/
 └── SMAART_Project_Details.md  # Complete documentation
 ```
 
-## 📄 License
+##  License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## 👤 Author
+##  Author
 
 **Karepalli Mahesh**
 - Email: krplm@proton.me
 - GitHub: [@something111-del](https://github.com/something111-del)
 - Repository: [SMAART](https://github.com/something111-del/SMAART)
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - **Hugging Face** for the DistilBART model
 - **X (Twitter)** for API access
